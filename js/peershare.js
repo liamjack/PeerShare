@@ -42,7 +42,7 @@ jQuery.fn.selectText = function(){
 };
 
 $(document).ready(function() {
-	var peer = new Peer({key: 'YOUR PEERCLOUD API KEY', debug: 0});
+	var peer = new Peer({key: 'YOUR API KEY', debug: 3});
 
 	peer.on('error', function(err) {
 		$("#container").html('<h2>Error encountered</h2>' + err);
@@ -51,6 +51,10 @@ $(document).ready(function() {
 		peer.destroy();
 		
 		return false;
+	});
+	
+	peer.on('close', function() {
+		console.log("1 : Peer connection closed");
 	});
 		
 	if(!window.location.hash) {
@@ -73,7 +77,7 @@ $(document).ready(function() {
 				dataConnection.on('open', function() {
 					var data = new Object();
 					
-					data.type = "transfer-info";
+					data.type = "transferinfo";
 					data.filename = file.name;
 					data.filesize = file.size;
 										
@@ -84,13 +88,10 @@ $(document).ready(function() {
 				});
 				
 				dataConnection.on('data', function(data) {
-				
-					console.log(data);
-				
-					if(data.type == "transfer-request") {
+					if(data.type == "transferrequest") {
 						data = new Object();
 						
-						data.type = "transfer-file";
+						data.type = "transferfile";
 						data.file = file;
 						data.sent = (new Date()).getTime();
 						
@@ -98,7 +99,7 @@ $(document).ready(function() {
 						
 						$("#log").append(getTimestamp() + "Sending file to " + dataConnection.peer + "<br>");
 						$('#log').scrollTop($('#log')[0].scrollHeight);
-					} else if(data.type == "transfer-complete") {
+					} else if(data.type == "transfercomplete") {
 						$("#log").append(getTimestamp() + "File sent to " + dataConnection.peer + " (" + data.time + " s | " + data.speed + " kb/s)<br>");
 						$('#log').scrollTop($('#log')[0].scrollHeight);
 					} else {
@@ -118,16 +119,16 @@ $(document).ready(function() {
 		});
 		
 		dataConnection.on('data', function(data) {
-			if(data.type == "transfer-info") {
+			if(data.type == "transferinfo") {
 				window.filename = data.filename;
 				window.filesize = data.filesize;
 				
 				$("#container").html('<h2>Receive file</h2>File name : ' + data.filename + '<br>File size : ' + bytesToSize(data.filesize) + '<form id="receive"><input type="submit" value="Receive file" /></form>');
-			} else if(data.type == "transfer-file") {
+			} else if(data.type == "transferfile") {
 				data.received = (new Date()).getTime();
 				
 				var reply = new Object();
-				reply.type = "transfer-complete";
+				reply.type = "transfercomplete";
 				reply.time = ((data.received - data.sent) / 1000).toFixed(2);
 				reply.speed = (window.filesize / 1024 / reply.time).toFixed(2);
 				
@@ -147,7 +148,7 @@ $(document).ready(function() {
 				event.preventDefault();
 				
 				data = new Object();
-				data.type = "transfer-request";
+				data.type = "transferrequest";
 				
 				dataConnection.send(data);
 				
