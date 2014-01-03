@@ -6,7 +6,7 @@ PeerShare is mainly built on Javascript and [jQuery](http://jquery.com/), and us
 
 # Features
 
-Enables sharing files of any size between two (modern) browsers, the sender can share the file to multiple peers at one time, and can see what's going on with the in-page console. The receiving peer cannot currently see the transfer speed during transfer, but once the transfer is completed both peers can see the overall transfer time to complete and the average speed.
+Enables sharing files of any size between two (modern) browsers, the sender can share the file to multiple peers at one time, and can see what's going on with the in-page console. The peers cannot currently see the transfer speed during transfer, but once the transfer is completed both peers can see the overall time and the average speed of the transfer.
 
 # Installation
 
